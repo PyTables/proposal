@@ -50,128 +50,124 @@ class Particle(IsDescription):
 \vspace{2.5mm}
 
 
-\begin{comment}
-
 You then pass this class to the table constructor, fill its rows
 with your values, and save (arbitrarily large) collections of them to a
 file for persistent storage. After that, the data can be retrieved and
 post-processed quite easily with PyTables or even with another HDF5
-application (in C, Fortran, Java or whatever language that provides a
-library to interface with HDF5).
+application (in C, C++, Fortran, Java, Perl, and other languages which provide 
+an interface to HDF5).
 
 Other important entities in PyTables are
-*array* objects, which are analogous to tables with
+array objects, which are analogous to tables with
 the difference that all of their components are homogeneous. They come
-in different flavors, like *generic* (they provide a
+in different flavors, like \emph{generic} (they provide a
 quick and fast way to deal with for numerical arrays),
-*enlargeable* (arrays can be extended along a single
-dimension) and *variable length* (each row in the
+\emph{enlargeable} (arrays can be extended along a single
+dimension) and \emph{variable length} (each row in the
 array can have a different number of elements).
 
-The next section describes the most interesting capabilities of
-PyTables.
 
-Main Features
--------------
+
+
+\subsection{Main Features}
 
 PyTables takes advantage of the object orientation and
 introspection capabilities offered by Python, the powerful data
-management features of HDF5, and NumPy's flexibility and Numexpr's
+management features of HDF5, NumPy's flexibility, and Numexpr's
 high-performance manipulation of large sets of objects organized in a
-grid-like fashion to provide these features:
+grid-like fashion to provide the following features.
 
-- *Support for table entities:* You can
-  tailor your data adding or deleting records in your tables. Large
-  numbers of rows (up to 2**63, much more than will fit into memory)
+\begin{itemize}
+\item \textbf{Support for table entities:} Data sets may be tailored by
+  adding or deleting records in tables. Large
+  numbers of rows (up to 2\superscript{63} -- many more than will fit into memory)
   are supported as well.
 
-- *Multidimensional and nested table
-  cells:* You can declare a column to consist of values
+\item \textbf{Multidimensional and nested table
+  cells:} Columns can be declared to consist of values
   having any number of dimensions besides scalars, which is the only
   dimensionality allowed by the majority of relational databases.
-  You can even declare columns that are made of other columns (of
-  different types).
+  Nested columns that are made of other columns (of
+  different types) may also be declared.
 
-- *Indexing support for columns of tables:*
-  Very useful if you have large tables and you want to quickly look
-  up for values in columns satisfying some criteria.
+\item \textbf{Indexing support for columns of tables:}
+  This feature, common in SQL, is very useful for large tables and which 
+  must be quickly queried for values in columns satisfying some criteria.
 
-- *Support for numerical arrays:*
-  NumPy (see :ref:`[NUMPY] <NUMPY>`), Numeric (see :ref:`[NUMERIC] <NUMERIC>`),
-  and numarray (see :ref:`[NUMARRAY] <NUMARRAY>`)
-  arrays can be used as a useful complement of tables to store
-  homogeneous data.
+\item \textbf{Support for numerical arrays:}
+  NumPy \cite{Oliphant2007} arrays can be used as a useful 
+  complement of tables to store homogeneous data.
 
-- *Enlargeable arrays:* You can add new
-  elements to existing arrays on disk in any dimension you want (but
-  only one). Besides, you are able to access just a slice of your
-  datasets by using the powerful extended slicing mechanism, without
-  need to load all your complete dataset in memory.
+\item \textbf{Enlargeable arrays:} New
+  elements may be added to existing arrays on disk in any desired, single dimension.
+  Moreover, access just a slice of a 
+  dataset is granted by using the powerful extended slicing mechanism, without
+  the need to load the complete dataset in memory.
 
-- *Variable length arrays:* The number of
+\item \textbf{Variable length arrays:} The number of
   elements in these arrays can vary from row to row. This provides a
   lot of flexibility when dealing with complex data.
 
-- *Supports a hierarchical data model:*
+\item \textbf{Supports a hierarchical data model:}
   Allows the user to clearly structure all data. PyTables builds up
-  an *object tree* in memory that replicates the
+  an \emph{object tree} in memory that replicates the
   underlying file data structure. Access to objects in the file is
   achieved by walking through and manipulating this object tree.
   Besides, this object tree is built in a lazy way, for efficiency
   purposes.
 
-- *User defined metadata:* Besides
+\item \textbf{User defined metadata:} Besides
   supporting system metadata (like the number of rows of a table,
   shape, flavor, etc.) the user may specify arbitrary metadata (as
   for example, room temperature, or protocol for IP traffic that was
   collected) that complement the meaning of actual data.
 
-- *Ability to read/modify generic HDF5
-  files:* PyTables can access a wide range of objects in
+\item \textbf{Ability to read/modify generic HDF5
+  files:} PyTables can access a wide range of objects in
   generic HDF5 files, like compound type datasets (that can be
   mapped to Table objects), homogeneous datasets
   (that can be mapped to Array objects) or
   variable length record datasets (that can be mapped to
   VLArray objects). Besides, if a dataset is not
   supported, it will be mapped to a special
-  UnImplemented class (see :ref:`UnImplementedClassDescr`),
+  UnImplemented class,
   that will let the user see that the data is there, although it
-  will be unreachable (still, you will be able to access the
-  attributes and some metadata in the dataset). With that, PyTables
-  probably can access and *modify* most of the
-  HDF5 files out there.
+  will be unreachable (the user is able to access the
+  attributes and some metadata in the dataset). In practice, PyTables
+  is cabable of accessing and modifying the overwhelming majority of
+  HDF5 files.
 
-- *Data compression:* Supports data
-  compression (using the *Zlib*,
-  *LZO*, *bzip2*
-  and *Blosc* compression libraries) out of the
-  box. This is important when you have repetitive data patterns and
-  don't want to spend time searching for an optimized way to store
-  them (saving you time spent analyzing your data
-  organization).
+\item \textbf{Data compression:} Supports data
+  compression (using the Zlib, LZO, bzip2
+  and Blosc compression libraries) out of the
+  box. This is important for repetitive data patterns and
+  for searching over such data in an optimized way. This 
+  reduces the time spent analyzing data due to organizational 
+    overhead.
 
-- *High performance I/O:* On modern systems
+\item \textbf{High performance I/O:} On modern systems
   storing large amounts of data, tables and array objects can be
   read and written at a speed only limited by the performance of the
-  underlying I/O subsystem. Moreover, if your data is compressible,
-  even that limit is surmountable!
+  underlying I/O subsystem. Moreover, if the data is compressible,
+  even this I/O-bound limitation is surmountable.
 
-- *Support of files bigger than 2 GB:*
+\item \textbf{Support of files bigger than 2 GB:}
   PyTables automatically inherits this capability from the
   underlying HDF5 library (assuming your platform supports the C
-  long long integer, or, on Windows, __int64).
+  long long integer, or, on Windows, \_\_int64).
 
-- *Architecture-independent:* PyTables has
+\item \textbf{Architecture-independent:} PyTables has
   been carefully coded (as HDF5 itself) with
-  little-endian/big-endian byte ordering issues in mind. So, you can
-  write a file on a big-endian machine (like a Sparc or MIPS) and
-  read it on other little-endian machine (like an Intel or Alpha)
+  little-endian/big-endian byte ordering issues in mind. Thus, a
+  file written on a big-endian machine (like a Sparc or MIPS) may be
+  read on another little-endian machine (like an Intel or Alpha)
   without problems. In addition, it has been tested successfully
-  with 64 bit platforms (Intel-64, AMD-64, PowerPC-G5, MIPS,
-  UltraSparc) using code generated with 64 bit aware
-  compilers.
+  with both 32 \& 64 bit platforms using code generated with a variety 
+  of compilers.
 
-.. _ObjectTreeSection:
+\end{itemize}
+
+\begin{comment}
 
 The Object Tree
 ---------------
