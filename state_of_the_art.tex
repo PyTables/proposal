@@ -134,7 +134,7 @@ grid-like fashion to provide the following features.
   that will let the user see that the data is there, although it
   will be unreachable (the user is able to access the
   attributes and some metadata in the dataset). In practice, PyTables
-  is cabable of accessing and modifying the overwhelming majority of
+  is capable of accessing and modifying the overwhelming majority of
   HDF5 files.
 
 \item \textbf{Data compression:} Supports data
@@ -197,7 +197,7 @@ classes are descendants of Leaf, and inherit all
 its properties.
 
 Working with groups and leaves is similar in many ways to
-working with directories and files on a Unix filesystem, i.e. a node
+working with directories and files on a Unix file system, i.e. a node
 (file or directory) is always a \emph{child} of one and
 only one group (directory), its \emph{parent group}.
 Inside of that group, the node is accessed by its
@@ -222,10 +222,10 @@ loaded only when the user accesses it. Moreover,
 the actual data is not read until it is requested (by calling a method
 on a particular node). Using the object tree (the metadata)
 information may be retrieves about the objects on disk.  For tables 
-thi includes names, titles, column names, data types in columns, and the numbers of rows.
+this includes names, titles, column names, data types in columns, and the numbers of rows.
 For the case of arrays their shapes, typecodes, etc may be retrieved. 
 The tree may also be searched through for specific kinds of data then read in and processed.
-Therfore PyTables as a tool that
+Therefore PyTables as a tool that
 applies the same introspection capabilities of Python objects to large
 amounts of data in persistent storage.  This is capability that is not
 present in the underlying HDF5 routines.
@@ -301,54 +301,34 @@ fileh.close()
 \end{python}
 \vspace{2.5mm}
 
-\begin{comment}
-
 This small program creates a simple HDF5 file called
 \texttt{objecttree.h5} with the structure that appears in
-:ref:`Figure 1 <objecttree-h5>`.
+Figure \ref{objecttree-h5}.
 When the file is created, the metadata in the object tree is updated
 in memory while the actual data is saved to disk. When you close the
 file the object tree is no longer available. However, when you reopen
 this file the object tree will be reconstructed in memory from the
 metadata on disk (this is done in a lazy way, in order to load only
-the objects that are required by the user), allowing you to work with
-it in exactly the same way as when you originally created it.
+the objects that are required by the user), allowing the user to work with
+it in exactly the same way as when the user originally created it.
 
+Figure \ref{objecttree}, is an example of the object tree created when the above
+\texttt{objecttree.h5} file is read in.  In fact, such an object
+tree is always created when reading any supported generic HDF5 file.
+This demonstrates the relationships of in-memory PyTables objects.
 
-.. _objecttree-h5:
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.75]{figures/objecttree-h5.png}
+\caption{An HDF5 example with 2 subgroups, 2 tables and 1 array.}
+\label{objecttree-h5}
+\end{center}
+\end{figure}
 
-.. figure:: images/objecttree-h5.png
-    :align: center
-
-    **Figure 1: An HDF5 example with 2 subgroups, 2 tables and 1 array.**
-
-In :ref:`Figure2 <objecttree>`, you
-can see an example of the object tree created when the above
-objecttree.h5 file is read (in fact, such an object
-tree is always created when reading any supported generic HDF5 file).
-It is worthwhile to take your time to understand it [4]_.
-It will help you understand the relationships of in-memory PyTables
-objects.
-
-.. _objecttree:
-
-.. figure:: images/objecttree.png
-    :width: 1276px
-    :height: 1488px
-    :align: center
-
-    **Figure 2: A PyTables object tree example.**
-
----------------------------
-
-.. [2] I got this simple but powerful idea from the excellent
-       Objectify module by David Mertz (see :ref:`[MERTZ] <MERTZ>`).
-
-.. [3] We have used ViTables (see :ref:`[VITABLES] <VITABLES>`) in order to create this snapshot.
-
-.. [4] Bear in mind, however, that this diagram is
-       *not* a standard UML class diagram; it is
-       rather meant to show the connections between the PyTables objects
-       and some of its most important attributes and methods.
-
-\end{comment}
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{figures/objecttree.png}
+\caption{A PyTables object tree example.}
+\label{objecttree}
+\end{center}
+\end{figure}
