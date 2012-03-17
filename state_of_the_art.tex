@@ -167,18 +167,16 @@ grid-like fashion to provide the following features.
 
 \end{itemize}
 
-\begin{comment}
 
-The Object Tree
----------------
+\subsection{The Object Tree}
 
 The hierarchical model of the underlying HDF5 library allows
 PyTables to manage tables and arrays in a tree-like structure. In
-order to achieve this, an *object tree* entity is
-*dynamically* created imitating the HDF5 structure
+order to achieve this, an object tree entity is
+dynamically created imitating the HDF5 structure
 on disk. The HDF5 objects are read by walking through this object
-tree. You can get a good picture of what kind of data is kept in the
-object by examining the *metadata* nodes.
+tree. What kind of data is kept in the object may be discovered 
+by examining the \emph{metadata} nodes.
 
 The different nodes in the object tree are instances of PyTables
 classes. There are several types of classes, but the most important
@@ -187,10 +185,10 @@ Leaf classes. All nodes in a PyTables tree are
 instances of the Node class. The
 Group and Leaf classes are
 descendants of Node. Group
-instances (referred to as *groups* from now on) are
+instances (referred to as \emph{groups} from now on) are
 a grouping structure containing instances of zero or more groups or
 leaves, together with supplementary metadata. Leaf
-instances (referred to as *leaves*) are containers
+instances (referred to as \emph{leaves}) are containers
 for actual data and can not contain further groups or leaves. The
 Table, Array,
 CArray, EArray,
@@ -200,109 +198,114 @@ its properties.
 
 Working with groups and leaves is similar in many ways to
 working with directories and files on a Unix filesystem, i.e. a node
-(file or directory) is always a *child* of one and
-only one group (directory), its *parent group* [1]_.
+(file or directory) is always a \emph{child} of one and
+only one group (directory), its \emph{parent group}.
 Inside of that group, the node is accessed by its
-*name*. As is the case with Unix directories and
+\emph{name}. As is the case with Unix directories and
 files, objects in the object tree are often referenced by giving their
 full (absolute) path names. In PyTables this full path can be
 specified either as string (such as
-'/subgroup2/table3', using / as
+\texttt{/subgroup2/table3}, using \texttt{/} as
 a parent/child separator) or as a complete object path written in a
-format known as the *natural name* schema (such as
-file.root.subgroup2.table3).
+format known as the \emph{natural name} schema (such as
+\texttt{file.root.subgroup2.table3}).
 
-Support for *natural naming* is a key aspect
+Support for \emph{natural naming} is a key aspect
 of PyTables. It means that the names of instance variables of the node
-objects are the same as the names of its children [2]_. This is very
-*Pythonic* and intuitive in many cases. Check the tutorial
-:ref:`readingAndSelectingUsage` for usage examples.
+objects are the same as the names of its children \cite{Mertz2000}. 
+This is very Pythonic and intuitive in many cases. 
 
-You should also be aware that not all the data present in a file
-is loaded into the object tree. The *metadata*
+Note that not all the data present in a file
+is loaded into the object tree. The metadata
 (i.e. special data that describes the structure of the actual data) is
-loaded only when the user want to access to it (see later). Moreover,
-the actual data is not read until she request it (by calling a method
-on a particular node). Using the object tree (the metadata) you can
-retrieve information about the objects on disk such as table names,
-titles, column names, data types in columns, numbers of rows, or, in
-the case of arrays, their shapes, typecodes, etc. You can also search
-through the tree for specific kinds of data then read it and process
-it. In a certain sense, you can think of PyTables as a tool that
+loaded only when the user accesses it. Moreover,
+the actual data is not read until it is requested (by calling a method
+on a particular node). Using the object tree (the metadata)
+information may be retrieves about the objects on disk.  For tables 
+thi includes names, titles, column names, data types in columns, and the numbers of rows.
+For the case of arrays their shapes, typecodes, etc may be retrieved. 
+The tree may also be searched through for specific kinds of data then read in and processed.
+Therfore PyTables as a tool that
 applies the same introspection capabilities of Python objects to large
-amounts of data in persistent storage.
+amounts of data in persistent storage.  This is capability that is not
+present in the underlying HDF5 routines.
 
-It is worth noting that PyTables sports a *metadata
-cache system* that loads nodes *lazily*
+Furthermore, PyTables sports a \emph{metadata
+cache system} that loads nodes \emph{lazily}
 (i.e. on-demand), and unloads nodes that have not been used for some
-time (following a *Least Recently Used* schema). It
-is important to stress out that the nodes enter the cache after they
-have been unreferenced (in the sense of Python reference counting),
+time (following a \emph{Least Recently Used} schema). It
+is important to stress that the nodes enter the cache after they
+have been unreferenced (via Python reference counting),
 and that they can be revived (by referencing them again) directly from
 the cache without performing the de-serialization process from
 disk. This feature allows dealing with files with large hierarchies
 very quickly and with low memory consumption, while retaining all the
 powerful browsing capabilities of the previous implementation of the
-object tree. See :ref:`[OPTIM] <OPTIM>` for
+object tree. See \cite{Alted2005} for
 more facts about the advantages introduced by this new metadata cache
 system.
 
 To better understand the dynamic nature of this object tree
-entity, let's start with a sample PyTables script (which you can find
-in examples/objecttree.py) to create an HDF5
-file::
+entity, start with a sample PyTables script to create an HDF5
+file:
 
-    from tables import *
+\vspace{2.5mm}
+\begin{python}
+from tables import *
 
-    class Particle(IsDescription):
-        identity = StringCol(itemsize=22, dflt=" ", pos=0)  # character String
-        idnumber = Int16Col(dflt=1, pos = 1)  # short integer
-        speed    = Float32Col(dflt=1, pos = 1)  # single-precision
+class Particle(IsDescription):
+    identity = StringCol(itemsize=22, dflt=" ", pos=0)  # character string
+    idnumber = Int16Col(dflt=1, pos = 1)  # short integer
+    speed    = Float32Col(dflt=1, pos = 1)  # single-precision
 
-    # Open a file in "w"rite mode
-    fileh = openFile("objecttree.h5", mode = "w")
+# Open a file in "w"rite mode
+fileh = openFile("objecttree.h5", mode = "w")
 
-    # Get the HDF5 root group
-    root = fileh.root
+# Get the HDF5 root group
+root = fileh.root
 
-    # Create the groups
-    group1 = fileh.createGroup(root, "group1")
-    group2 = fileh.createGroup(root, "group2")
+# Create the groups
+group1 = fileh.createGroup(root, "group1")
+group2 = fileh.createGroup(root, "group2")
 
-    # Now, create an array in root group
-    array1 = fileh.createArray(root, "array1", ["string", "array"], "String array")
+# Now, create an array in root group
+array1 = fileh.createArray(root, "array1", ["string", "array"], "String array")
 
-    # Create 2 new tables in group1
-    table1 = fileh.createTable(group1, "table1", Particle)
-    table2 = fileh.createTable("/group2", "table2", Particle)
+# Create 2 new tables in group1
+table1 = fileh.createTable(group1, "table1", Particle)
+table2 = fileh.createTable("/group2", "table2", Particle)
 
-    # Create the last table in group2
-    array2 = fileh.createArray("/group1", "array2", [1,2,3,4])
+# Create the last table in group2
+array2 = fileh.createArray("/group1", "array2", [1,2,3,4])
 
-    # Now, fill the tables
-    for table in (table1, table2):
-        # Get the record object associated with the table:
-        row = table.row
+# Now, fill the tables
+for table in (table1, table2):
+    # Get the record object associated with the table:
+    row = table.row
 
-        # Fill the table with 10 records
-        for i in xrange(10):
-            # First, assign the values to the Particle record
-            row['identity']  = 'This is particle: %2d' % (i)
-            row['idnumber'] = i
-            row['speed']  = i * 2.
+    # Fill the table with 10 records
+    for i in xrange(10):
+        # First, assign the values to the Particle record
+        row['identity']  = 'This is particle: %2d' % (i)
+        row['idnumber'] = i
+        row['speed']  = i * 2.
 
-            # This injects the Record values
-            row.append()
+        # This injects the Record values
+        row.append()
 
-        # Flush the table buffers
-        table.flush()
+    # Flush the table buffers
+    table.flush()
 
-    # Finally, close the file (this also will flush all the remaining buffers!)
-    fileh.close()
+# Finally, close the file (this also will flush all the remaining buffers!)
+fileh.close()
+\end{python}
+\vspace{2.5mm}
+
+\begin{comment}
 
 This small program creates a simple HDF5 file called
-objecttree.h5 with the structure that appears in
-:ref:`Figure 1 <objecttree-h5>` [3]_.
+\texttt{objecttree.h5} with the structure that appears in
+:ref:`Figure 1 <objecttree-h5>`.
 When the file is created, the metadata in the object tree is updated
 in memory while the actual data is saved to disk. When you close the
 file the object tree is no longer available. However, when you reopen
@@ -310,6 +313,7 @@ this file the object tree will be reconstructed in memory from the
 metadata on disk (this is done in a lazy way, in order to load only
 the objects that are required by the user), allowing you to work with
 it in exactly the same way as when you originally created it.
+
 
 .. _objecttree-h5:
 
@@ -336,8 +340,6 @@ objects.
     **Figure 2: A PyTables object tree example.**
 
 ---------------------------
-
-.. [1] PyTables does not support hard links - for the moment.
 
 .. [2] I got this simple but powerful idea from the excellent
        Objectify module by David Mertz (see :ref:`[MERTZ] <MERTZ>`).
